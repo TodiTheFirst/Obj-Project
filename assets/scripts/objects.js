@@ -56,10 +56,11 @@ filteredMovies.forEach( movie => {
     //  if (!('info' in movie)) или  (movie.info === undefined) {
     //  проверка на существование проперти
     // }
-    const { info, ... otherProps } = movie;
+    const { info, ...otherProps } = movie;
     console.log(otherProps);
-    const{ title: movieTitel } = info;
-    let text = movieTitel.toUpperCase() + ' - ';  // toUpperCase превращает всё в заглавные буквы
+    // const{ title: movieTitel } = info;
+    const { getFormattedTitle } = movie;
+    let text = movie.getFormattedTitle() + ' - ';  // toUpperCase превращает всё в заглавные буквы
     for (const key in info){
      if (key !== 'title'){
         text = text + `${key}: ${info[key]}`;
@@ -89,7 +90,7 @@ const newMovie = {
         [extraName]:extraValue
   },
   id: Math.random().toString(),
-  getFormattedTitle: function(){
+  getFormattedTitle()   {                   // сокращённый вариант добавлять методы
    return this.info.title.toUpperCase();
   }
  };
