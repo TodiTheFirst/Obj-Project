@@ -59,15 +59,18 @@ filteredMovies.forEach( movie => {
     const { info, ...otherProps } = movie;
     console.log(otherProps);
     // const{ title: movieTitel } = info;
-    const { getFormattedTitle } = movie;
-    let text = movie.getFormattedTitle() + ' - ';  // toUpperCase превращает всё в заглавные буквы
+    let { getFormattedTitle } = movie;
+    // getFormattedTitle = getFormattedTitle.bind(movie);
+    let text = getFormattedTitle.call(movie) + ' - ';  // toUpperCase превращает всё в заглавные буквы 
+    // call может принимать несколько аргументов первый идёт для this  данном случае остальные и позволяет делать референсы как bind 
+    // apply делает тоже самое что и call только может принять ещё один аргумент и он является массивом
     for (const key in info){
-     if (key !== 'title'){
+     if (key !== 'title' && key !== '_title'){
         text = text + `${key}: ${info[key]}`;
      }
     };
     moviEl.textContent = text;
-    movieList.append(moviEl);
+    movieList.append(moviEl);3
    }); 
 };
 
@@ -77,8 +80,8 @@ const addmovieHandler = () => {
     const extraValue = document.getElementById('extra-value').value;
     // .trim удаляет все проблемные символы в начале и конце строки (например пробел табуляция неразрывный пробел итд)
    if (
-    title.trim() === ''
-    || extraName.trim() === '' 
+    
+     extraName.trim() === '' 
     || extraValue.trim() === ''
     ) {
         return;
@@ -86,27 +89,43 @@ const addmovieHandler = () => {
 
 const newMovie = {
     info: {
-        title,
+        set title(val) {
+        if (val.trim() === '') {
+            this._title = 'DEAFULT';
+            return;
+        }
+         this._title = val;
+        },      
+        get title() {
+         return this._title;
+        },
+        // set также как и гет может создавать обьект со свойстваами но также может паралельно выполнять какую-нибудь логику для получения вылью (значения)
         [extraName]:extraValue
   },
   id: Math.random().toString(),
   getFormattedTitle()   {                   // сокращённый вариант добавлять методы
-   return this.info.title.toUpperCase();
+   return this.info.title.toUpperCase();   //  this как бы не было странно указывает что именно является  этим элементом
   }
  };
+ newMovie.info.title =  title; 
+console.log(newMovie.info.title);
+
  movies.push(newMovie);
  renderMovies();
 };
 
 
 const searchMovieHandler = () => {
+   console.log(this); // this  не работает в эрроу фанкшен
    const filterfilm = document.getElementById('filter-title').value;
    renderMovies(filterfilm);
 };
 
 
+
+
 addMovieBtn.addEventListener('click',addmovieHandler);
-searchBtn.addEventListener('click',searchMovieHandler)
+searchBtn.addEventListener('click',searchMovieHandler);
 
 
 
